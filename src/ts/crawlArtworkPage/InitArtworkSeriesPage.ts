@@ -117,7 +117,7 @@ class InitArtworkSeriesPage extends InitPageBase {
     } else {
       // 继续抓取
       log.log(
-        lang.transl('_列表页抓取进度', this.listPageFinished.toString()),
+        '➡️' + lang.transl('_列表页抓取进度', this.listPageFinished.toString()),
         1,
         false
       )

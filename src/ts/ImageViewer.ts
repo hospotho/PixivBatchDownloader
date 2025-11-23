@@ -477,10 +477,6 @@ class ImageViewer {
     if (status === 200) {
       toast.success(lang.transl('_已收藏'))
     }
-
-    if (status === 403) {
-      toast.error(`403 Forbidden, ${lang.transl('_你的账号已经被Pixiv限制')}`)
-    }
   }
 
   /**下载当前查看的作品。如果传入参数 p，则只下载指定的这张图片 */

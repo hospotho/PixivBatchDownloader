@@ -4,6 +4,7 @@ import { toast } from './Toast'
 import { states } from './store/States'
 import { bookmark, WorkBookmarkData } from './Bookmark'
 import { msgBox } from './MsgBox'
+import { Tools } from './Tools'
 
 // 移除本页面中所有作品的标签
 class RemoveWorksTagsInBookmarks {
@@ -32,11 +33,8 @@ class RemoveWorksTagsInBookmarks {
         )
 
         if (status === 403) {
-          msgBox.error(
-            `Add bookmark: ${item.workID}, Error: 403 Forbidden, ${lang.transl(
-              '_你的账号已经被Pixiv限制'
-            )}`
-          )
+          const msg = Tools.addBookmark403Error()
+          msgBox.error(msg)
           break
         }
       } catch (error) {

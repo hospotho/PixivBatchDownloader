@@ -243,8 +243,9 @@ class BatchFollowUser {
       }
 
       this.logProgress(number, total, this.sendReqNumber)
-      log.success('✓ ' + taskName)
-      msgBox.success('✓ ' + taskName)
+      const msg = '✅' + taskName
+      log.success(msg)
+      msgBox.success(msg)
       return resolve()
     })
   }

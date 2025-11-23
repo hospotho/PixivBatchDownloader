@@ -221,7 +221,6 @@ class QuickBookmark {
       )
 
       if (status === 403) {
-        toast.error(`403 Forbidden, ${lang.transl('_你的账号已经被Pixiv限制')}`)
         return
       }
 
@@ -251,8 +250,10 @@ class QuickBookmark {
 
   // 点赞这个作品
   private like(type: WorkType, id: string, likeBtn: HTMLButtonElement) {
-    API.addLike(id, type, token.token)
-    likeBtn.style.color = '#0096fa'
+    try {
+      API.addLike(id, type, token.token)
+      likeBtn.style.color = '#0096fa'
+    } catch (error: Error | any) {}
   }
 
   private setBtnStyle() {

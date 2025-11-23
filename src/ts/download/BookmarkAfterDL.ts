@@ -89,7 +89,7 @@ class BookmarkAfterDL {
       this.successCount === this.IDList.length
     ) {
       this.showCompleteLog = false
-      log.success(lang.transl('_收藏作品完毕'))
+      log.success('♥️' + lang.transl('_收藏作品完毕'))
     }
   }
 
@@ -165,28 +165,22 @@ class BookmarkAfterDL {
       store.result.length > 30
     )
 
-    this.successCount++
-    // 已完成的数量不应该超过任务总数
-    // 特定情况下会导致已完成数量比任务总数多 1，需要修正。原因如下：
-    // 在下载完毕后，收藏尚未完毕（例如进度为 18/48)，并且第 19 个收藏任务已经发送给了 bookmark.add
-    // 在这个收藏任务完成前，用户点击开始下载按钮开始了新一批下载任务，导致执行了 reset
-    // successCount 会重置为 0
-    // 但之后遗留的 bookmark.add 执行完毕，在这里导致 successCount + 1
-    // 这会使已完成数量比开始下载后的新的任务数量多 1，所以需要进行检查，以避免这种情况
-    if (this.successCount > this.IDList.length) {
-      this.successCount = this.IDList.length
+    if (status === 200) {
+      this.successCount++
+      // 已完成的数量不应该超过任务总数
+      // 特定情况下会导致已完成数量比任务总数多 1，需要修正。原因如下：
+      // 在下载完毕后，收藏尚未完毕（例如进度为 18/48)，并且第 19 个收藏任务已经发送给了 bookmark.add
+      // 在这个收藏任务完成前，用户点击开始下载按钮开始了新一批下载任务，导致执行了 reset
+      // successCount 会重置为 0
+      // 但之后遗留的 bookmark.add 执行完毕，在这里导致 successCount + 1
+      // 这会使已完成数量比开始下载后的新的任务数量多 1，所以需要进行检查，以避免这种情况
+      if (this.successCount > this.IDList.length) {
+        this.successCount = this.IDList.length
+      }
+      this.showProgress()
     }
-    this.showProgress()
+
     this.busy = false
-
-    if (status === 403) {
-      log.error(
-        `Add bookmark: ${id}, Error: 403 Forbidden, ${lang.transl(
-          '_你的账号已经被Pixiv限制'
-        )}`
-      )
-    }
-
     return this.check()
   }
 }

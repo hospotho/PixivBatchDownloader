@@ -473,7 +473,7 @@ class Log {
 
     Utils.downloadFile(url, fileName)
 
-    const msg = lang.transl('_导出日志成功')
+    const msg = '✅' + lang.transl('_导出日志成功')
     log.success(msg)
     toast.success(msg, {
       position: 'topCenter',

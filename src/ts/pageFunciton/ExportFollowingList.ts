@@ -55,7 +55,7 @@ class ExportFollowingList {
     const log1 = lang.transl(
       format === 'csv' ? '_导出关注列表CSV' : '_导出关注列表JSON'
     )
-    log.log(log1)
+    log.log('🚀' + log1)
     const log2 = lang.transl('_开始抓取用户列表')
     log.log(log2)
     toast.show(log2)
@@ -195,7 +195,7 @@ class ExportFollowingList {
 
     if (this.userList.length === 0) {
       const msg =
-        '✓ ' +
+        '✅' +
         lang.transl('_用户数量为0') +
         ', ' +
         lang.transl('_没有可用的抓取结果')
@@ -204,14 +204,14 @@ class ExportFollowingList {
     } else {
       if (this.format === 'csv') {
         this.exportCSV()
-        const msg = '✓ ' + lang.transl('_导出关注列表CSV')
+        const msg = '✅' + lang.transl('_导出关注列表CSV')
         log.success(msg)
         toast.success(msg)
       }
 
       if (this.format === 'json') {
         this.exportJSON()
-        const msg = '✓ ' + lang.transl('_导出关注列表JSON')
+        const msg = '✅' + lang.transl('_导出关注列表JSON')
         log.success(msg)
         toast.success(msg)
       }

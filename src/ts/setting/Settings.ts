@@ -907,7 +907,7 @@ class Settings {
     this.setSetting('tipOpenWikiLink', true)
     this.setSetting('tipCopyWorkInfoButton', true)
 
-    toast.success('✓ ' + lang.transl('_重新显示帮助'))
+    toast.success(lang.transl('_重新显示帮助'))
   }
 
   // 重置设置 或者 导入设置

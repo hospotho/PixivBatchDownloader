@@ -22,8 +22,8 @@ class LogErrorStatus {
           url: string
         }
 
-        /** 对特定 API 错误显示更友好的提示 */
-        let isSpecialHandle = false
+        /** 对特定 API 错误显示有针对性的提示 */
+        let specialHandle = false
 
         // 判断是否是获取作品数据的 API（url 如下所示）
         // 如果是，则输出具体的日志
@@ -32,31 +32,40 @@ class LogErrorStatus {
         const matchIllust = url.match(/ajax\/illust\/(\d+)/)
         if (matchIllust && matchIllust.length > 1) {
           this.logErrorWithWorkLink(status, matchIllust[1], 'artwork')
-          isSpecialHandle = true
+          specialHandle = true
         }
 
         const matchNovel = url.match(/ajax\/novel\/(\d+)/)
         if (matchNovel && matchNovel.length > 1) {
           this.logErrorWithWorkLink(status, matchNovel[1], 'novel')
-          isSpecialHandle = true
+          specialHandle = true
         }
 
         // 判断是否是添加收藏的请求
         // https://www.pixiv.net/ajax/novels/bookmarks/add
+        // 这里不显示日志，因为在 Bookmark 模块里会单独进行处理
         if (url.includes('/bookmarks/add')) {
-          log.error('_添加收藏失败')
-          isSpecialHandle = true
+          // log.error(lang.transl('_添加收藏失败'))
+          specialHandle = true
+        }
+
+        // 判断是否是点赞的请求
+        // https://www.pixiv.net/ajax/illusts/like
+        if (url.endsWith('/like')) {
+          const msg = `${lang.transl('_点赞失败')}, ${lang.transl('_状态码')}: ${status}`
+          log.error(msg)
+          specialHandle = true
         }
 
         // 判断是否是获取关注列表的请求
         // https://www.pixiv.net/ajax/user/103852206/following?offset=0&limit=24&rest=show&tag=&lang=zh
         if (url.includes('/following')) {
           log.error(lang.transl('_获取关注列表失败'))
-          isSpecialHandle = true
+          specialHandle = true
         }
 
         // 如果不符合特殊处理的情况，则输出通用的提示
-        if (!isSpecialHandle) {
+        if (!specialHandle) {
           const link = `<a href="${url}" target="_blank">${url}</a>`
           const msg = lang.transl(
             '_网络错误状态码为x网址为y',

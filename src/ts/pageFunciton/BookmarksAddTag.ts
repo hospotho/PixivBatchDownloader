@@ -141,7 +141,8 @@ class BookmarksAddTag {
     )
     if (status === 403) {
       this.textSpan.textContent = `× Permission denied`
-      msgBox.error(lang.transl('_你的账号已经被Pixiv限制'))
+      const msg = Tools.addBookmark403Error()
+      msgBox.error(msg)
       return
     }
 

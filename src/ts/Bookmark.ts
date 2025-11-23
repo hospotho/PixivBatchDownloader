@@ -197,7 +197,7 @@ class Bookmark {
     }
 
     log.persistentRefresh()
-    const msg = '✓ ' + lang.transl('_收藏作品完毕')
+    const msg = '♥️' + lang.transl('_收藏作品完毕')
     log.success(msg)
     toast.success(msg, {
       position: 'center',
@@ -216,7 +216,15 @@ class Bookmark {
     } catch (error: Error | any) {
       if (error.status) {
         const status = error.status
+        const workLink = Tools.createWorkLink(
+          id,
+          '',
+          type === 'novels' ? 'novel' : 'artwork'
+        )
         switch (status) {
+          // 注意：其他模块调用本模块来添加收藏时，由本模块来显示下面的错误消息
+          // 所以其他模块通常不需要自行显示错误消息，否则就重复了
+          // 不过下面没有使用 msgBox 来显示（因为会打扰用户），所以如果其他模块想使用 msgBox 来显示的话可以自行处理
           // 当发生 400 错误时重试
           case 400:
             await token.reset()
@@ -227,14 +235,34 @@ class Bookmark {
                 retryReject
               )
             })
+          case 403:
+            // 显示 403 错误的提示
+            // 当一个账号被限制无法收藏时，依然可以正常删除收藏，所以“取消收藏本页面中的所有作品”的功能不受影响
+            const msg = Tools.addBookmark403Error()
+            log.error(workLink + ' ' + msg)
+            this.toastDebounce(msg)
+            return status
           case 404:
             log.error(`${id} 404 Not Found`)
+            return status
+          default:
+            log.error(
+              `${workLink} ${lang.transl('_添加收藏失败')}, ${lang.transl('_状态码')}: ${status}`
+            )
             return status
         }
       }
       return 0
     }
   }
+
+  private toastDebounce: (msg: string) => void = Utils.debounce(
+    (msg: string) => {
+      toast.error(msg)
+      // 延迟时间不能太短，如果小于两次调用的间隔，就会导致每次都执行
+    },
+    500
+  )
 }
 
 const bookmark = new Bookmark()

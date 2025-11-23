@@ -176,7 +176,7 @@ class InitBookmarkNewPage extends InitPageBase {
     this.listPageFinished++
 
     log.log(
-      lang.transl('_列表页抓取进度', this.listPageFinished.toString()),
+      '➡️' + lang.transl('_列表页抓取进度', this.listPageFinished.toString()),
       1,
       false
     )

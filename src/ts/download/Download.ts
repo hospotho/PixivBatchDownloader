@@ -194,13 +194,13 @@ class Download {
       if (arg.result.novelMeta) {
         // 生成小说文件
         if (settings.novelSaveAs === 'epub') {
-          const blob: Blob = await makeNovelFile.makeEPUB(
+          const blob = await makeNovelFile.makeEPUB(
             arg.result.novelMeta,
             _fileName
           )
           url = URL.createObjectURL(blob)
         } else {
-          const blob: Blob = await makeNovelFile.makeTXT(
+          const blob = await makeNovelFile.makeTXT(
             arg.result.novelMeta,
             _fileName
           )

@@ -82,6 +82,7 @@ class DownloadNovelEmbeddedImage {
         imageName = Utils.replaceUnsafeStr(imageName)
       }
 
+      const blobURL = URL.createObjectURL(blob)
       let dataURL: string | undefined = undefined
       if (Config.sendDataURL) {
         dataURL = await Utils.blobToDataURL(blob)
@@ -93,7 +94,7 @@ class DownloadNovelEmbeddedImage {
         fileName: imageName,
         id: 'fake',
         taskBatch: -1,
-        blobURL: URL.createObjectURL(blob),
+        blobURL,
         blob: Config.sendBlob ? blob : undefined,
         dataURL,
       }

@@ -254,7 +254,7 @@ class SaveWorkDescription {
     }
     browser.runtime.sendMessage(sendData)
 
-    const msg = `✓ ${lang.transl('_保存作品的简介2')}: ${lang.transl(
+    const msg = `✅${lang.transl('_保存作品的简介2')}: ${lang.transl(
       '_汇总到一个文件'
     )}`
     log.success(msg)

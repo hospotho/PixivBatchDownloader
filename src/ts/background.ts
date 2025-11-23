@@ -130,7 +130,8 @@ browser.runtime.onMessage.addListener(async function (
   if (
     msg.msg === 'save_description_file' ||
     msg.msg === 'save_novel_cover_file' ||
-    msg.msg === 'save_novel_embedded_image'
+    msg.msg === 'save_novel_embedded_image' ||
+    msg.msg === 'save_novel_series_file'
   ) {
     const _url = await getFileURL(msg)
     browser.downloads

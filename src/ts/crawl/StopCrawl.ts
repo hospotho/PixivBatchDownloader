@@ -26,7 +26,7 @@ class StopCrawl {
     this.btn.addEventListener('click', () => {
       this.hide()
       const msg = lang.transl('_已停止抓取')
-      log.error(msg)
+      log.error('🛑' + msg)
       toast.error(msg)
       EVT.fire('stopCrawl')
       states.stopCrawl = true

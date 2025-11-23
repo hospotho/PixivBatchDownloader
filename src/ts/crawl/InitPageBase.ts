@@ -196,7 +196,7 @@ abstract class InitPageBase {
 
     EVT.fire('clearLog')
 
-    log.success(lang.transl('_开始抓取'))
+    log.success('🚀' + lang.transl('_开始抓取'))
     toast.show(lang.transl('_开始抓取'), {
       position: 'center',
     })
@@ -253,7 +253,7 @@ abstract class InitPageBase {
 
       EVT.fire('clearLog')
 
-      log.success(lang.transl('_开始抓取'))
+      log.success('🚀' + lang.transl('_开始抓取'))
       toast.show(lang.transl('_开始抓取'), {
         bgColor: Colors.bgBlue,
       })
@@ -349,8 +349,8 @@ abstract class InitPageBase {
           )
         }
 
-        const msg = '✓ ' + lang.transl('_导出ID列表')
-        log.success(msg)
+        const msg = lang.transl('_导出ID列表')
+        log.success('✅' + msg)
         toast.success(msg)
       }
 
@@ -599,7 +599,7 @@ abstract class InitPageBase {
 
     log.log(lang.transl('_共抓取到n个文件', store.result.length.toString()))
 
-    log.success(lang.transl('_抓取完毕'), 2)
+    log.success('✅' + lang.transl('_抓取完毕'), 2)
 
     // 发出抓取完毕的信号
     EVT.fire('crawlComplete')
@@ -621,7 +621,7 @@ abstract class InitPageBase {
   // 每当抓取了一个作品之后，输出提示
   protected logResultNumber() {
     log.log(
-      `${lang.transl('_抓取进度')}: ${lang.transl('_待处理')} ${store.idList.length}, ${lang.transl(
+      `➡️${lang.transl('_抓取进度')}: ${lang.transl('_待处理')} ${store.idList.length}, ${lang.transl(
         '_共抓取到n个作品',
         store.resultMeta.length.toString()
       )}`,
@@ -636,8 +636,13 @@ abstract class InitPageBase {
     // 如果触发顺序反过来，那么最后执行的都是 crawlComplete，可能会覆盖对 crawlEmpty 的处理
     EVT.fire('crawlComplete')
     EVT.fire('crawlEmpty')
+
     let msg = lang.transl('_抓取结果为零')
     if (settings.autoMergeNovel && settings.skipNovelsInSeriesWhenAutoMerge) {
+      // 当用户启用了自动合并系列小说，并且处于系列小说页面里时，不需要显示提示，因为所有小说都被合并了
+      if (pageType.type === pageType.list.NovelSeries) {
+        return
+      }
       msg +=
         '<br>' + lang.transl('_抓取结果为零并且启用了自动合并系列小说时的提示')
     }

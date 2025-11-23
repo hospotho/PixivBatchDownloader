@@ -462,11 +462,12 @@ class InitSearchArtworkPage extends InitPageBase {
     }
 
     log.log(
-      lang.transl(
-        '_列表页抓取进度2',
-        this.listPageFinished.toString(),
-        this.needCrawlPageCount.toString()
-      ),
+      '➡️' +
+        lang.transl(
+          '_列表页抓取进度2',
+          this.listPageFinished.toString(),
+          this.needCrawlPageCount.toString()
+        ),
       1,
       false
     )
@@ -905,13 +906,6 @@ class InitSearchArtworkPage extends InitPageBase {
           })
           data.el.classList.add(this.bookmarkedClass)
         }
-
-        if (status === 403) {
-          toast.error(
-            `403 Forbidden, ${lang.transl('_你的账号已经被Pixiv限制')}`
-          )
-        }
-
         break
       }
     }

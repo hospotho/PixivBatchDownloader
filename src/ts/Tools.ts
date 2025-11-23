@@ -1014,6 +1014,13 @@ class Tools {
     ) as NodeListOf<HTMLAnchorElement>
     ads.forEach((ad) => (ad.style.display = 'none'))
   }
+
+  /** 当添加收藏失败且状态码为 403 时，显示特定提示。由于有多个模块需要使用此提示，所以提取出来 */
+  static addBookmark403Error() {
+    return `${lang.transl('_添加收藏失败')}, ${lang.transl('_状态码')}: 403 Forbidden
+            <br>
+            ${lang.transl('_你的账号可能已经被限制无法添加收藏')}`
+  }
 }
 
 export { Tools }

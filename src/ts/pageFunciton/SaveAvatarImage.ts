@@ -42,8 +42,8 @@ class SaveAvatarImage {
     const name = `${userProfile.body.name}_${userId}_avatar.${ext}`
     Utils.downloadFile(url, name)
 
-    const msg = '✓ ' + lang.transl('_保存用户头像')
-    log.success(msg)
+    const msg = lang.transl('_保存用户头像')
+    log.success('✅' + msg)
     toast.success(msg)
     EVT.fire('closeCenterPanel')
   }

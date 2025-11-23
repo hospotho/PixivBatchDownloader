@@ -68,7 +68,7 @@ class FilterInactiveUsers {
     this.busy = true
 
     // 显示提示
-    const log1 = lang.transl('_筛选不活跃的用户')
+    const log1 = '🚀' + lang.transl('_筛选不活跃的用户')
     log.log(log1)
     toast.warning(log1)
     const log2 = lang.transl('_开始抓取用户列表')
@@ -199,7 +199,7 @@ class FilterInactiveUsers {
     // 在批量关注用户时，抓取结果为 0 并不影响继续执行
     if (this.total === 0) {
       const msg =
-        '✓ ' +
+        '✅' +
         lang.transl('_用户数量为0') +
         ', ' +
         lang.transl('_没有可用的抓取结果')
@@ -207,7 +207,7 @@ class FilterInactiveUsers {
       msgBox.warning(msg)
     } else {
       this.exportResult()
-      const msg = '✓ ' + lang.transl('_筛选不活跃的用户')
+      const msg = '✅' + lang.transl('_筛选不活跃的用户')
       log.success(msg)
       toast.success(msg)
     }

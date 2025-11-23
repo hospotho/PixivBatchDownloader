@@ -523,35 +523,30 @@ class PreviewWork {
 
     if (status === 200) {
       toast.success(lang.transl('_已收藏'))
-    }
 
-    if (status === 403) {
-      toast.error(`403 Forbidden, ${lang.transl('_你的账号已经被Pixiv限制')}`)
-      return
-    }
+      // 将作品缩略图上的收藏按钮变成红色
+      const allSVG = this.workEL!.querySelectorAll('svg')
+      if (allSVG.length > 0) {
+        // 如果有多个 svg，一般最后一个是收藏按钮
+        let useSVG = allSVG[allSVG.length - 1]
 
-    // 将作品缩略图上的收藏按钮变成红色
-    const allSVG = this.workEL!.querySelectorAll('svg')
-    if (allSVG.length > 0) {
-      // 如果有多个 svg，一般最后一个是收藏按钮
-      let useSVG = allSVG[allSVG.length - 1]
+        // 但有些特殊情况是第一个
+        if (pageType.type === pageType.list.Request) {
+          useSVG = allSVG[0]
+        }
 
-      // 但有些特殊情况是第一个
-      if (pageType.type === pageType.list.Request) {
-        useSVG = allSVG[0]
-      }
+        // 多图作品里可能有两个 svg，一个是右上角的图片数量，一个是收藏按钮
+        // 区别是收藏按钮在 button 元素里
+        const btnSVG = this.workEL!.querySelector('button svg') as SVGSVGElement
+        if (btnSVG) {
+          useSVG = btnSVG
+        }
 
-      // 多图作品里可能有两个 svg，一个是右上角的图片数量，一个是收藏按钮
-      // 区别是收藏按钮在 button 元素里
-      const btnSVG = this.workEL!.querySelector('button svg') as SVGSVGElement
-      if (btnSVG) {
-        useSVG = btnSVG
-      }
-
-      useSVG.style.color = 'rgb(255, 64, 96)'
-      const allPath = useSVG.querySelectorAll('path')
-      for (const path of allPath) {
-        path.style.fill = 'currentcolor'
+        useSVG.style.color = 'rgb(255, 64, 96)'
+        const allPath = useSVG.querySelectorAll('path')
+        for (const path of allPath) {
+          path.style.fill = 'currentcolor'
+        }
       }
     }
 

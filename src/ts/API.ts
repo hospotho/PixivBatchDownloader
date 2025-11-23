@@ -52,7 +52,7 @@ interface LikeResponse {
 
 class API {
   // API 里的所有请求都从这里转发，以简化代码，并方便统一处理错误
-  // 429 错误会自动重试，其他错误会 reject
+  // 如果状态码异常，429 状态码会自动重试，其他状态码会通过 reject 抛出 Error
   static fetch<T>(
     url: string,
     init?: RequestInit,

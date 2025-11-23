@@ -287,7 +287,7 @@ class InitHomePage extends InitPageBase {
       }
     }
 
-    log.success('✓ ' + lang.transl('_导入ID列表'))
+    log.success('✅' + lang.transl('_导入ID列表'))
 
     store.reset()
 

@@ -182,11 +182,8 @@ class BookmarkAllWorks {
           true
         )
         if (status === 403) {
-          msgBox.error(
-            `Add bookmark: ${data.id}, Error: 403 Forbidden, ${lang.transl(
-              '_你的账号已经被Pixiv限制'
-            )}`
-          )
+          const msg = Tools.addBookmark403Error()
+          msgBox.error(msg)
           break
         }
 

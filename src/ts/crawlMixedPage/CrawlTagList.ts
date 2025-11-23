@@ -147,7 +147,7 @@ class CrawlTagList {
           // 输出提示
           this.showTagListWrap.innerHTML = `<span style="color:${
             Colors.textSuccess
-          }">${lang.transl('_下载完毕')}</span>`
+          }">✅${lang.transl('_下载完毕')}</span>`
           return
         }
 

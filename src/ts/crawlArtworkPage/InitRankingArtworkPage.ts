@@ -142,7 +142,7 @@ class InitRankingArtworkPage extends InitPageBase {
     this.listPageFinished++
 
     log.log(
-      lang.transl('_排行榜进度', this.listPageFinished.toString()),
+      '➡️' + lang.transl('_排行榜进度', this.listPageFinished.toString()),
       1,
       false
     )

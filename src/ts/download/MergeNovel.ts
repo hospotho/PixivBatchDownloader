@@ -15,6 +15,8 @@ import { DateFormat } from '../utils/DateFormat'
 import { pageType } from '../PageType'
 import { cacheWorkData } from '../store/CacheWorkData'
 import { setTimeoutWorker } from '../SetTimeoutWorker'
+import { SendToBackEndData } from './DownloadType'
+import browser from 'webextension-polyfill'
 
 declare const jEpub: any
 
@@ -71,7 +73,7 @@ class MergeNovel {
 
   /**每次请求之间等待一段时间 */
   private async sleep(time: number) {
-    if(this.slowMode){
+    if (this.slowMode) {
       return new Promise((res) => setTimeoutWorker.set(res, time))
     }
   }
@@ -94,7 +96,7 @@ class MergeNovel {
     const link = `<a href="https://www.pixiv.net/novel/series/${this.seriesId}" target="_blank">${this.seriesTitle || this.seriesId}</a>`
     log.log(`📚${lang.transl('_合并系列小说')} ${link}`)
 
-    // 在小说系列页面里执行时，关闭设置面板
+    // 在系列小说页面里执行时，关闭设置面板
     // 在其他页面类型里不关闭设置面板，因为在其他页面里可能需要合并多个系列小说，会导致多次关闭设置面板。这可能会影响用户正常使用设置面板
     if (pageType.type === pageType.list.NovelSeries) {
       EVT.fire('closeCenterPanel')
@@ -141,10 +143,11 @@ class MergeNovel {
     // 生成小说文件并下载
     let file: Blob | null = null
     let novelName = `series-${this.userName}-${this.seriesTitle}-user_${this.userName}-seriesId_${this.seriesId}-tags_${seriesData.tags}.${settings.novelSaveAs}`
+    novelName = Utils.replaceUnsafeStr(novelName)
     if (settings.novelSaveAs === 'txt') {
       file = await this.mergeTXT(novelName)
       const url = URL.createObjectURL(file)
-      Utils.downloadFile(url, Utils.replaceUnsafeStr(novelName))
+      Utils.downloadFile(url, novelName)
       URL.revokeObjectURL(url)
     } else {
       await this.mergeEPUB(seriesData, novelName)
@@ -164,6 +167,11 @@ class MergeNovel {
 
     // 合并完成
     log.success(`✅${lang.transl('_已合并系列小说')} ${link}`)
+
+    // 在系列小说页面里执行时，由于只有一个系列，所以合并后显示轻提示
+    if (pageType.type === pageType.list.NovelSeries) {
+      toast.success(`${lang.transl('_已合并系列小说')}`)
+    }
     return this.allNovelData.length
   }
 
@@ -234,8 +242,11 @@ class MergeNovel {
 
       // 添加每篇小说的内容
       for (const data of this.allNovelData) {
-        // 添加章节名（标题）
-        text.push(`${this.chapterNo(data.no)} ${data.title}`)
+        // 添加章节编号
+        // 让编号独占一行。如果编号和标题在一行里，会导致静读天下无法识别目录
+        text.push(`${this.chapterNo(data.no)}`)
+        text.push(this.CRLF)
+        text.push(data.title)
         text.push(this.CRLF2)
         // 添加小说的元数据，内容包含：
         // url 小说的 URL
@@ -273,7 +284,10 @@ class MergeNovel {
   }
 
   // 生成的 EPUB 文件在这个方法里自行保存
-  private async mergeEPUB(seriesData: NovelSeriesData['body'], novelName: string): Promise<void> {
+  private async mergeEPUB(
+    seriesData: NovelSeriesData['body'],
+    novelName: string
+  ): Promise<void> {
     // 生成一些在每个文件里固定不变的数据
     const link = `https://www.pixiv.net/novel/series/${this.seriesId}`
     const date = new Date(this.seriesUpdateDate)
@@ -537,15 +551,16 @@ class MergeNovel {
   // 注意：检查体积时是以单篇小说为单位的，所以以下情况会生成超过 100 MiB 的 EPUB 文件：
   // 1. 单篇小说的体积已经超出限制（例如 200 MiB）
   // 2. 添加了多篇小说时，最后一篇导致总体积超出限制。例如 90 + 60，或者 30 + 30 + 50 的情况
+  // 我在自己的手机上测试打开 180 MB 的单个 EPUB 文件，阅读正常，里面的插画也能正常显示。
   private readonly epubSizeLimit = 100 * 1024 * 1024
 
   /** 保存每个部分的体积日志。只有当保存格式是 EPUB 时才会用到 */
   // 一开始会添加第一项，如果体积达到了限制才会添加下一项
   private sizeLog: {
     /** 这是第几个文件，从 0 开始 */
-    part: number,
+    part: number
     /** 这个文件里的文件总体积 */
-    size: number,
+    size: number
     /** 这个部分是否正在被使用。有多个部分时，只有最后一项是使用中的 */
     inUse: boolean
   }[] = []
@@ -553,7 +568,7 @@ class MergeNovel {
   /** 每次创建 EPUB 文件时，就添加一条体积的记录 */
   private pushSizeLog() {
     // 把之前已有的记录标记为不使用
-    this.sizeLog.forEach(item => item.inUse = false)
+    this.sizeLog.forEach((item) => (item.inUse = false))
     // 添加新的记录
     this.sizeLog.push({
       part: this.sizeLog.length,
@@ -563,21 +578,25 @@ class MergeNovel {
   }
 
   private addSize(size: number) {
-    const current = this.sizeLog.find(item => item.inUse)
+    const current = this.sizeLog.find((item) => item.inUse)
     if (current) {
       current.size += size
     }
   }
 
   private checkSizeLimit(): boolean {
-    const current = this.sizeLog.find(item => item.inUse)
+    const current = this.sizeLog.find((item) => item.inUse)
     if (current) {
       return current.size >= this.epubSizeLimit
     }
     return false
   }
 
-  private async saveEPUBFile(jepub: any, name: string, complete: boolean = false) {
+  private async saveEPUBFile(
+    jepub: any,
+    name: string,
+    complete: boolean = false
+  ) {
     // 判断是否需要添加 part 标记
     let addPartFlag = true
     // 如果已经添加了所有小说，并且只有一条 size 记录，说明这个 EPUB 文件里包含了所有小说，所以无须添加 part 标记
@@ -588,24 +607,51 @@ class MergeNovel {
     // 在后缀名前面添加 part 编号
     if (addPartFlag) {
       let part = 0
-      const current = this.sizeLog.find(item => item.inUse)
+      const current = this.sizeLog.find((item) => item.inUse)
       if (current) {
         part = current.part
       }
       const nameArray = name.split('.' + settings.novelSaveAs)
       name = `${nameArray[0]} part${part + 1}.${settings.novelSaveAs}`
     }
+    name = 'series_merge/' + name
 
     // 保存文件
-    const blob = await jepub.generate('blob', (metadata: any) => { })
+    const blob = await jepub.generate('blob', (metadata: any) => {})
     const url = URL.createObjectURL(blob)
-    Utils.downloadFile(url, Utils.replaceUnsafeStr(name))
-    // console.log('split EPUB file saved:', name)
-    URL.revokeObjectURL(url)
+    let dataURL: string | undefined = undefined
+    if (Config.sendDataURL) {
+      dataURL = await Utils.blobToDataURL(blob)
+    }
+
+    const sendData: SendToBackEndData = {
+      msg: 'save_novel_series_file',
+      fileName: name,
+      id: 'fake',
+      taskBatch: -1,
+      blobURL: url,
+      blob: Config.sendBlob ? blob : undefined,
+      dataURL,
+    }
+
+    // 使用 a.download 来下载文件时，不调用 downloads API
+    if (settings.rememberTheLastSaveLocation) {
+      // 移除文件夹，只保留文件名部分，因为这种方式不支持建立文件夹
+      const lastName = name.split('/').pop()
+      Utils.downloadFile(url, lastName!)
+      URL.revokeObjectURL(url)
+    } else {
+      browser.runtime.sendMessage(sendData)
+    }
 
     // 当这个系列里的所有小说都下载完毕后，如果它被分割成了多个文件，则显示提示日志
     if (complete && this.sizeLog.length > 1) {
-      log.warning(lang.transl('_由于这个系列小说里的图片体积很大所以分割成了x个文件', this.sizeLog.length.toString()))
+      log.warning(
+        lang.transl(
+          '_由于这个系列小说里的图片体积很大所以分割成了x个文件',
+          this.sizeLog.length.toString()
+        )
+      )
     }
   }
 

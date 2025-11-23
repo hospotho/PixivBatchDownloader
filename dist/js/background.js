@@ -1707,7 +1707,8 @@ webextension_polyfill__WEBPACK_IMPORTED_MODULE_1___default().runtime.onMessage.a
     // 对于这些文件直接下载，不需要返回下载结果
     if (msg.msg === 'save_description_file' ||
         msg.msg === 'save_novel_cover_file' ||
-        msg.msg === 'save_novel_embedded_image') {
+        msg.msg === 'save_novel_embedded_image' ||
+        msg.msg === 'save_novel_series_file') {
         const _url = await getFileURL(msg);
         webextension_polyfill__WEBPACK_IMPORTED_MODULE_1___default().downloads
             .download({

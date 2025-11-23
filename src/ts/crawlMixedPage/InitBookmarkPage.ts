@@ -270,8 +270,8 @@ class InitBookmarkPage extends InitPageBase {
             )
           }
 
-          const msg = '✓ ' + lang.transl('_导出收藏列表')
-          log.success(msg)
+          const msg = lang.transl('_导出收藏列表')
+          log.success('✅' + msg)
           toast.success(msg)
         }
       })
