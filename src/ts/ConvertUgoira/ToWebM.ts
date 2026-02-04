@@ -15,7 +15,8 @@ class ToWebM {
 
     const videoSource = new Mediabunny.VideoSampleSource({
       codec: 'vp9',
-      bitrate: Mediabunny.QUALITY_HIGH,
+      bitrate: new Mediabunny.Quality(200),
+      fullCodecString: 'vp09.00.40.08.03.01.01.01.01',
     })
     output.addVideoTrack(videoSource)
 
